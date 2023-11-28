@@ -133,7 +133,7 @@ cur.executemany("INSERT INTO Review VALUES(?, ?, ?, ?, ?, ?)", data)
 print("UserName", "Comment", "Rating", "ResortName")
 for row in cur.execute("select username, comment, rating, resortName from users u, review r, skiresort s where u.userID == r.userID and s.resortID == r.resortID order by rating DESC"):
     print(row)
-
+"""
 cur.execute("CREATE INDEX IF NOT EXISTS idx_user_id ON Users(userID)")
 cur.execute("CREATE INDEX IF NOT EXISTS idx_resort_id ON SkiResort(resortID)")
 cur.execute("CREATE INDEX IF NOT EXISTS idx_review_user ON Review(userID)")
@@ -257,3 +257,5 @@ print("Bookable by Resort Result:", bookable_by_resort_result)
 
 photos_by_resort_result = search_photos_by_resort_id(1)
 print("Photos by Resort Result:", photos_by_resort_result)
+
+"""
