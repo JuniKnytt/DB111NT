@@ -7,6 +7,42 @@ db = SQLAlchemy()
 
 import sqlite3
 
+import sqlite3
+
+conn = sqlite3.connect('data.db')
+cursor = conn.cursor()
+
+# Define the data to be inserted
+ski_resorts_data = [
+    ('Mountain Peak Resort', 'Snowy Valley', 'A premier resort with ski slopes and luxurious accommodations.', '2000'),
+    ('Alpine Retreat', 'Frosty Hills', 'Experience the thrill of skiing with breathtaking views.', '1800'),
+    ('Snowy Pines Resort', 'Frozen Lake District', 'Family-friendly resort offering skiing and snowboarding lessons.', '1600'),
+    ('Peak Paradise', 'Icy Ridge', 'Unmatched skiing experience with top-notch amenities.', '2200'),
+    ('Crystal Slopes Resort', 'White Summit', 'Ski and relax in the lap of nature with world-class facilities.', '2100'),
+    ('Powder Haven', 'Chill Mountain Range', 'Skiing and snow sports paradise for enthusiasts.', '1900'),
+    ('Glacier Peaks Resort', 'Icy Peak Valley', 'Explore the beauty of winter with our skiing trails.', '2300'),
+    ('Frosty Meadows Lodge', 'Snowy Plains', 'Enjoy the warmth of our cozy lodge after an exciting day on the slopes.', '1700'),
+    ('Summit Serenity', 'Frozen Peaks Village', 'Escape to serenity with our ski resort at high altitudes.', '2400'),
+    ('Polar Ridge Resort', 'Arctic Slopes', 'Experience the Arctic charm with our ski resort and icy adventures.', '2500'),
+    ('White Cap Chalet', 'Snowy Ridge Town', 'Skiing fun and relaxation in the heart of the snowy town.', '2000'),
+    ('Avalanche Haven', 'Frozen Valley', 'Thrilling slopes and snow-covered landscapes await at our resort.', '2100'),
+    ('Frozen Crest Resort', 'Icicle Ridge', 'Discover the beauty of winter with skiing and snowboarding at our resort.', '1800'),
+    ('Snowfall Sanctuary', 'Chilled Plateau', 'Find sanctuary in the midst of snowy slopes and peaceful surroundings.', '2200'),
+    ('Frostbite Ridge Retreat', 'Icy Plateau', 'Skiing adventure combined with luxurious retreat facilities.', '2300'),
+    ('Winter Wonderland Resort', 'Snowy Escarpment', 'Experience a winter wonderland with our ski resort at high elevations.', '2400'),
+    ('Peak View Lodge', 'Snowy Highlands', 'Panoramic views and top-class skiing facilities for an unforgettable experience.', '2100'),
+    ('Glacial Gateway Resort', 'Frozen Gateway', 'Gateway to glacial adventures with skiing and snow sports.', '2000'),
+    ('Chill Haven Chalet', 'Snowy Oasis', 'A cozy chalet offering the perfect blend of relaxation and skiing excitement.', '1900'),
+    ('Arctic Escape', 'Frozen Oasis', 'Escape to the Arctic with our ski resort offering icy adventures.', '2500')
+]
+
+# Insert data into SkiResort table
+cursor.executemany('INSERT INTO SkiResort (resortName, resortLocation, resortDescription, resortElevation) VALUES (?, ?, ?, ?)', ski_resorts_data)
+
+# Commit the changes and close the connection
+conn.commit()
+conn.close()
+
 
 
 
@@ -42,6 +78,15 @@ def search_resort_by_id(resort_id):
     con.close()
     return result
 
+##I
+def search_resort_by_name(resort_name):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM SkiResort WHERE resortName LIKE ?", ('%' + resort_name + '%',))
+    result = cur.fetchall()
+    con.close()
+    return result
+
 def search_reviews_by_user_id(user_id):
     con = sqlite3.connect("data.db")
     cur = con.cursor()
@@ -51,6 +96,7 @@ def search_reviews_by_user_id(user_id):
     return result
 
 def search_reviews_by_resort_id(resort_id):
+
     con = sqlite3.connect("data.db")
     cur = con.cursor()
     cur.execute("SELECT * FROM Review WHERE resortID=?", (resort_id,))
@@ -117,12 +163,12 @@ def search():
     print(q)
 
     if q:
-        #results = search_resort_by_id(q)
-        
+        results = search_resort_by_name(q)
+        pass
     else:
         results = search_resort_by_id(q)
-    print("Resort Result:", search_resort_by_id(q))
-
+    print("Resort Result:", search_resort_by_name(q))
+    print(results)
     return render_template("search_results.html", results=results)
 
 def create_app():
