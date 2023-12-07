@@ -1,1 +1,144 @@
-from flask import request
+import csv
+
+from flask import Flask, request, render_template, Blueprint
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+import sqlite3
+
+
+
+
+con = sqlite3.connect("data.db")
+cur = con.cursor()
+
+cur.execute("CREATE INDEX IF NOT EXISTS idx_user_id ON Users(userID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_resort_id ON SkiResort(resortID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_review_user ON Review(userID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_review_resort ON Review(resortID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_review_rating ON Review(rating)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_sra_activity ON SkiResortActivities(activityID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_sra_resort ON SkiResortActivities(resortID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_activity_id ON Activity(activityID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_userfav_user ON userFavResort(userID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_userfav_resort ON userFavResort(resortID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_bookable_resort ON Bookable(resortID)")
+cur.execute("CREATE INDEX IF NOT EXISTS idx_photo_resort ON Photo(resortID)")
+
+def search_users_by_id(user_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Users WHERE userID=?", (user_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_resort_by_id(resort_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM SkiResort WHERE resortID=?", (resort_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_reviews_by_user_id(user_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Review WHERE userID=?", (user_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_reviews_by_resort_id(resort_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Review WHERE resortID=?", (resort_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_reviews_by_rating(rating):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Review WHERE rating=?", (rating,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_resorts_by_activity(activity_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT r.* FROM SkiResort r, SkiResortActivities sa WHERE sa.activityID=? AND sa.resortID=r.resortID", (activity_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_user_favorites_by_user_id(user_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM userFavResort WHERE userID=?", (user_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_user_favorites_by_resort_id(resort_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM userFavResort WHERE resortID=?", (resort_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_bookable_by_resort_id(resort_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Bookable WHERE resortID=?", (resort_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def search_photos_by_resort_id(resort_id):
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Photo WHERE resortID=?", (resort_id,))
+    result = cur.fetchall()
+    con.close()
+    return result
+main = Blueprint("main", __name__)
+
+@main.route("/")
+def index():
+    return render_template("index.html")
+
+@main.route("/search")
+def search():
+    q = request.args.get("q")
+    print(q)
+
+    if q:
+        #results = search_resort_by_id(q)
+        results = ["fuck", "this", "resort"]
+    else:
+        results = search_resort_by_id(q)
+    print("Resort Result:", search_resort_by_id(q))
+
+    return render_template("search_results.html", results=results)
+
+def create_app():
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+
+    db.init_app(app)
+
+    app.register_blueprint(main)
+
+    return app
+
+
+
+
+
+app = create_app()
+if __name__ == "__main__":
+    app.run(debug=True)
