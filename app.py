@@ -1,8 +1,7 @@
 import csv
 
-from flask import Flask, request, render_template, Blueprint
+from flask import Flask, request, render_template, Blueprint, jsonify
 from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
 import sqlite3
@@ -107,23 +106,34 @@ def search_photos_by_resort_id(resort_id):
     return result
 main = Blueprint("main", __name__)
 
+# @main.route("/")
+# def index():
+#     return render_template("index.html")
+
+
 @main.route("/")
-def index():
-    return render_template("index.html")
+def all_resorts():
+    # Retrieve all ski resorts from the database
+    results = search_all_ski_resorts()
+    return render_template("all.html", results=results)
 
-@main.route("/search")
-def search():
-    q = request.args.get("q")
-    print(q)
+def search_all_ski_resorts():
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    
+    # Use a LEFT JOIN to include resorts without reviews
+    cur.execute("""
+        SELECT r.*, AVG(re.rating) AS average_rating
+        FROM SkiResort r
+        LEFT JOIN Review re ON r.resortID = re.resortID
+        GROUP BY r.resortID
+    """)
+    
+    result = cur.fetchall()
+    con.close()
+    return result
 
-    if q:
-        #results = search_resort_by_id(q)
-        
-    else:
-        results = search_resort_by_id(q)
-    print("Resort Result:", search_resort_by_id(q))
 
-    return render_template("search_results.html", results=results)
 
 def create_app():
     app = Flask(__name__)
