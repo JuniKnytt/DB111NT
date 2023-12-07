@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="columns">
+            <div class="column is-one-third is-offset-one-third">
+                <input type="text" class="input" placeholder="Search" name="q" hx-get="/search"
+                    hx-trigger="keyup changed delay:500ms" hx-target="#results">
+            </div>
+        </div>
+        <table class="table is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Resort</th>
+                    <th>Address</th>
+                    <th>Description</th>
+                    <th>Elevation</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody id="results" hx-get="/all_resorts">
+                
+                {% for result in results %}
+                <tr>
+                    <td>{{ result[1] }}</td>  <!-- Assuming resortName is at index 1 -->
+                    <td>{{ result[2] }}</td>  <!-- Assuming resortLocation is at index 2 -->
+                    <td>{{ result[3] }}</td>  <!-- Assuming description is at index 3 -->
+                    <td>{{ result[4] }}</td>  <!-- Assuming elevation is at index 4 -->
+                    <td>{{ result[5] }}</td>  <!-- Assuming rating is at index 5 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</body>
+
+</html>
+
+

@@ -171,6 +171,28 @@ def search():
     print(results)
     return render_template("search_results.html", results=results)
 
+@main.route("/all")
+def all_resorts():
+    # Retrieve all ski resorts from the database
+    results = search_all_ski_resorts()
+    return render_template("all.html", results=results)
+
+def search_all_ski_resorts():
+    con = sqlite3.connect("data.db")
+    cur = con.cursor()
+    
+    # Use a LEFT JOIN to include resorts without reviews
+    cur.execute("""
+        SELECT r.*, AVG(re.rating) AS average_rating
+        FROM SkiResort r
+        LEFT JOIN Review re ON r.resortID = re.resortID
+        GROUP BY r.resortID
+    """)
+    
+    result = cur.fetchall()
+    con.close()
+    return result
+
 def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
