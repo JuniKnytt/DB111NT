@@ -118,7 +118,7 @@ def search():
 
     if q:
         #results = search_resort_by_id(q)
-        results = ["fuck", "this", "resort"]
+        
     else:
         results = search_resort_by_id(q)
     print("Resort Result:", search_resort_by_id(q))
